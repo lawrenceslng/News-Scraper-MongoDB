@@ -69,12 +69,15 @@ request("https://www.sfchronicle.com/local/", function(error, response, html) {
       link: link,
       summary: summary
     });
-    db.articles.insert({tite:title,link: link,
+    db.articles.insert({
+      title: title,
+      link: link,
       summary: summary})
-  });
-
+    });
   // Log the results once you've looped through each of the elements found with cheerio
   console.log(results);
+
+
 });
 res.sendFile(path.join(__dirname, '/public/results.html'));
 
@@ -91,6 +94,12 @@ app.get("/database",function(req,res){
       res.json(data);
     }
   });
+});
+
+app.get("/clear",function(req,res){
+  console.log("dropping database...");
+  db.dropDatabase();
+  res.sendFile(path.join(__dirname, '/public/index.html'));
 })
 // Set the app to listen on port 3000
 app.listen(3000, function() {
