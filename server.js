@@ -96,6 +96,7 @@ app.get("/database",function(req,res){
   });
 });
 
+
 app.get("/saved_articles_database",function(req,res){
   db.savedArticles.find({}, function(err, data) {
     // Log any errors if the server encounters one
@@ -113,12 +114,21 @@ app.get("/clear",function(req,res){
   console.log("dropping database...");
   db.dropDatabase();
   res.sendFile(path.join(__dirname, '/public/index.html'));
-})
+});
 
+//route to get list of articles that the user saved
 app.get("/saved_articles", function(req,res){
   console.log("going to saved article and retrieving saved articles");
   res.sendFile(path.join(__dirname, '/public/results.html'));
-})
+});
+
+//need a POST route to insert comments by users
+app.post("/comment", function(req,res){
+  console.log("saving comment");
+  console.log(req.body);
+  res.sendFile(path.join(__dirname, '/public/index.html'));
+});
+
 // Set the app to listen on port 3000
 app.listen(3000, function() {
     console.log("App running on port 3000!");
