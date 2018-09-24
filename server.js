@@ -37,13 +37,13 @@ app.get("/",function(req,res){
 
 app.get("/bay_area_news", function(req,res){
 // First, tell the console what server.js is doing
-console.log("\n***********************************\n" +
+  console.log("\n***********************************\n" +
             "Grabbing every headline\n" +
             "from SF Chronicle news board:" +
             "\n***********************************\n");
-var results = [];
-// Making a request for reddit's "webdev" board. The page's HTML is passed as the callback's third argument
-request("https://www.sfchronicle.com/local/", function(error, response, html) {
+  var results = [];
+  // Making a request for reddit's "webdev" board. The page's HTML is passed as the callback's third argument
+  request("https://www.sfchronicle.com/local/", function(error, response, html) {
 
   // Load the HTML into cheerio and save it to a variable
   // '$' becomes a shorthand for cheerio's selector commands, much like jQuery's '$'
@@ -79,7 +79,7 @@ request("https://www.sfchronicle.com/local/", function(error, response, html) {
 
 
 });
-res.sendFile(path.join(__dirname, '/public/results.html'));
+res.sendFile(path.join(__dirname, '/public/index.html'));
 
 });
 
@@ -96,10 +96,28 @@ app.get("/database",function(req,res){
   });
 });
 
+app.get("/saved_articles_database",function(req,res){
+  db.savedArticles.find({}, function(err, data) {
+    // Log any errors if the server encounters one
+    if (err) {
+      console.log(err);
+    }
+    else {
+      // Otherwise, send the result of this query to the browser
+      res.json(data);
+    }
+  });
+});
+
 app.get("/clear",function(req,res){
   console.log("dropping database...");
   db.dropDatabase();
   res.sendFile(path.join(__dirname, '/public/index.html'));
+})
+
+app.get("/saved_articles", function(req,res){
+  console.log("going to saved article and retrieving saved articles");
+  res.sendFile(path.join(__dirname, '/public/results.html'));
 })
 // Set the app to listen on port 3000
 app.listen(3000, function() {
