@@ -32,12 +32,39 @@ function getResults() {
 // Runs the getResults function as soon as the script is executed
 getResults();
   
+// When the #clear-all button is pressed
+$(".scrape").on("click", function() {
+    // Make an AJAX GET request to delete the notes from the db
+    $.ajax({
+        type: "GET",
+        url: "/bay_area_news",
+        // On a successful call, clear the #results section
+        success: function(response) {
+            setTimeout(getResults, 3000);
+        }
+    });
+});
+
+$(document).on("click",".clear",function(){
+    $.ajax({
+        type: "GET",
+        dataType: "json",
+        url: "/clear",
+        // On a successful call, clear the #results section
+        success: function(response) {
+          $(".results").empty();
+          getResults();
+        }
+      });
+})
+
 //this function will pop a modal box so that users can leave a comment and their name for a particular article
 $(document).on("click", ".submit", function() {
     console.log("comment saving");
-    $("#commentForm").attr("method","POST");
-    $("#commentForm").attr("action","/comment");
-    $("#commentForm").submit();
+    $(this).parent()
+    // $("#commentForm").attr("method","POST");
+    // $("#commentForm").attr("action","/comment");
+    // $("#commentForm").submit();
 });
 
 $(document).on("click",".comment",function(event){

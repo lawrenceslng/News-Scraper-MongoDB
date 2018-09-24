@@ -44,7 +44,7 @@ app.get("/bay_area_news", function(req,res){
   var results = [];
   // Making a request for reddit's "webdev" board. The page's HTML is passed as the callback's third argument
   request("https://www.sfchronicle.com/local/", function(error, response, html) {
-
+  if(error) throw error;
   // Load the HTML into cheerio and save it to a variable
   // '$' becomes a shorthand for cheerio's selector commands, much like jQuery's '$'
   var $ = cheerio.load(html);
@@ -76,10 +76,10 @@ app.get("/bay_area_news", function(req,res){
     });
   // Log the results once you've looped through each of the elements found with cheerio
   console.log(results);
-
+  
 
 });
-res.sendFile(path.join(__dirname, '/public/index.html'));
+res.send("hello");
 
 });
 
@@ -110,10 +110,21 @@ app.get("/saved_articles_database",function(req,res){
   });
 });
 
-app.get("/clear",function(req,res){
-  console.log("dropping database...");
-  db.dropDatabase();
-  res.sendFile(path.join(__dirname, '/public/index.html'));
+app.get("/clear", function(req, res) {
+  // Remove every note from the notes collection
+  db.articles.remove({}, function(error, response) {
+    // Log any errors to the console
+    if (error) {
+      console.log(error);
+      res.send(error);
+    }
+    else {
+      // Otherwise, send the mongojs response to the browser
+      // This will fire off the success function of the ajax request
+      console.log(response);
+      res.send(response);
+    }
+  });
 });
 
 //route to get list of articles that the user saved
