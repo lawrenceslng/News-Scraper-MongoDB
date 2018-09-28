@@ -13,10 +13,25 @@ function getResults() {
         }
         else{
             for (var i = 0; i < data.length; i++) {
-                console.log(data[i]);
+                console.log(data[i].comment.length);
                 var newDiv = $("<div>").attr("data-id", data[i]._id);
                 var saveButton = $("<button class='save'>").text("Save this Article");
-                var comments = $("<span>"+data[i].comment+"</span>");
+                if(data[i].comment.length == 0)
+                {
+                    var comments =  $("<span>No Comments for this article</span>");
+                }
+                else
+                {
+                    var comments = $("<span>");
+                    for(var j = 0; j < data[i].comment.length; j++)
+                    {
+                        console.log(data[i].comment[j]);
+                        //
+                        comments.append(data[i].comment[j]);
+                        comments.append("<br>");
+                    }
+                }
+                
                 var commentForm = $("<form>");
                 // var commentButton = $("<button type='button' class='btn btn-primary comment'>").text("View/Add a Comment");
                 var commentTextBox = $("<div class='form-group'><label for='commentTextArea'>Example textarea</label><textarea class='form-control' name='comment' id='commentTextArea' rows='3'></textarea></div>");

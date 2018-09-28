@@ -77,7 +77,8 @@ app.get("/bay_area_news", function(req,res){
     db.articles.insert({
       title: title,
       link: link,
-      summary: summary})
+      summary: summary,
+      comment: []})
     });
   // Log the results once you've looped through each of the elements found with cheerio
   console.log(results);
@@ -171,9 +172,9 @@ app.post("/comment/:id", function(req,res){
     {
       // Set the title, note and modified parameters
       // sent in the req body.
-      $set: {
-        comment: req.body.comment,
-        modified: Date.now()
+      $push: {
+        comment: req.body.comment
+        // modified: Date.now()
       }
     },
     function(error, edited) {
