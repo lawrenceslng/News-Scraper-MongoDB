@@ -4,13 +4,18 @@ var mongojs = require("mongojs");
 // Require request and cheerio. This makes the scraping possible
 var request = require("request");
 var path = require("path");
+var bodyParser = require("body-parser");
 /*
   cheerio takes the html from the request and let's you use jQuery like syntax to access particular text inside of it
 */
 var cheerio = require("cheerio");
 // Initialize Express
 var app = express();
-
+app.use(
+  bodyParser.urlencoded({
+    extended: false
+  })
+);
 // Set up a static folder (public) for our web app
 app.use(express.static("public"));
 
@@ -133,11 +138,57 @@ app.get("/saved_articles", function(req,res){
   res.sendFile(path.join(__dirname, '/public/results.html'));
 });
 
+// app.get("/delete/:id", function(req, res) {
+//   // Remove a note using the objectID
+//   db.notes.remove(
+//     {
+//       _id: mongojs.ObjectID(req.params.id)
+//     },
+//     function(error, removed) {
+//       // Log any errors from mongojs
+//       if (error) {
+//         console.log(error);
+//         res.send(error);
+//       }
+//       else {
+//         // Otherwise, send the mongojs response to the browser
+//         // This will fire off the success function of the ajax request
+//         console.log(removed);
+//         res.send(removed);
+//       }
+//     }
+//   );
+// });
 //need a POST route to insert comments by users
-app.post("/comment", function(req,res){
+app.post("/comment/:id", function(req,res){
   console.log("saving comment");
-  console.log(req.body);
-  res.sendFile(path.join(__dirname, '/public/index.html'));
+  console.log(req.params.id);
+  console.log(req.body.comment);
+  db.articles.update(
+    {
+      _id: mongojs.ObjectId(req.params.id)
+    },
+    {
+      // Set the title, note and modified parameters
+      // sent in the req body.
+      $set: {
+        comment: req.body.comment,
+        modified: Date.now()
+      }
+    },
+    function(error, edited) {
+      // Log any errors from mongojs
+      if (error) {
+        console.log(error);
+        res.send(error);
+      }
+      else {
+        // Otherwise, send the mongojs response to the browser
+        // This will fire off the success function of the ajax request
+        console.log(edited);
+        res.send(edited);
+      }
+    })
 });
 
 // Set the app to listen on port 3000
