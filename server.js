@@ -47,6 +47,23 @@ app.get("/bay_area_news", function(req,res){
             "from SF Chronicle news board:" +
             "\n***********************************\n");
   var results = [];
+  var existingArts = [];
+  //populate results with existing articles in database
+  db.articles.find({}, function(err, data) {
+    // Log any errors if the server encounters one
+    if (err) {
+      console.log(err);
+    }
+    else {
+      // Otherwise, send the result of this query to the browser
+      console.log(data);
+      existingArts = existingArts.concat(data);
+    }
+  });
+  
+
+
+
   // Making a request for reddit's "webdev" board. The page's HTML is passed as the callback's third argument
   request("https://www.sfchronicle.com/local/", function(error, response, html) {
   if(error) throw error;
@@ -80,13 +97,12 @@ app.get("/bay_area_news", function(req,res){
     //   summary: summary,
     //   comment: []})
     // });
-  // Log the results once you've looped through each of the elements found with cheerio
-  // console.log(results);
-  // console.log(results);
-  // db.articles.insert(removeDuplicate(results));
   
 });
-db.articles.insert(removeDuplicate(results));
+var unique = removeDuplicate(existingArts, results);
+// unique = removeDuplicate(existingArts.concat(unique));
+
+db.articles.insert(unique);
 res.send("hello");
 
 });
@@ -201,8 +217,9 @@ app.listen(3000, function() {
     console.log("App running on port 3000!");
 });
 
-function removeDuplicate(arr){
+function removeDuplicate(existing, arr){
   console.log(arr.length);
+  console.log(existing.length);
   var dup = [];
   var dupLength = 0;
   var uniqueArr = [];
@@ -211,8 +228,8 @@ function removeDuplicate(arr){
     
     for(var j = i; j < arr.length; j++) {
         if(i != j && arr[i].title == arr[j].title) {
-            console.log(arr[i].title);
-            console.log(arr[j].title);
+            // console.log(arr[i].title);
+            // console.log(arr[j].title);
             dup.push(j);
         }
         // else
@@ -225,13 +242,31 @@ function removeDuplicate(arr){
       uniqueArr.push(arr[i]);
     }
     else{
-      dupLength++;
+      dupLength = dup.length;
+      // arr = arr.splice(j,1);
     }
   }
-  console.log(dup);
-  console.log(uniqueArr.length);
-  console.log(uniqueArr);
-  return uniqueArr;
+  var uniqueArr2 = [];
+  if(existing.length > 0)
+  {
+    for(var x = 0; x < existing.length; x++)
+    {
+      for(var y = 0; y < uniqueArr.length; y++)
+      {
+        if(existing[x].title != uniqueArr[y].title && uniqueArr2.indexOf(uniqueArr[y].title) != -1)
+        {
+          uniqueArr2.push(uniqueArr[y]);
+        }
+      }
+    }
+  }
+ else{
+   uniqueArr2 = uniqueArr;
+ }
+  // console.log(dup);
+  console.log(uniqueArr2.length);
+  console.log(uniqueArr2);
+  return uniqueArr2;
 
   
 }
