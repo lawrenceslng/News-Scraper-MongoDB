@@ -48,7 +48,7 @@ app.get("/bay_area_news", function(req,res){
             "\n***********************************\n");
   var results = [];
   var existingArts = [];
-  //populate results with existing articles in database
+  //populate existingArts with existing articles in database
   db.articles.find({}, function(err, data) {
     // Log any errors if the server encounters one
     if (err) {
@@ -60,64 +60,52 @@ app.get("/bay_area_news", function(req,res){
       existingArts = existingArts.concat(data);
     }
   });
-  
-
-
 
   // Making a request for reddit's "webdev" board. The page's HTML is passed as the callback's third argument
   request("https://www.sfchronicle.com/local", function(error, response, html) {
-  if(error) throw error;
-  // Load the HTML into cheerio and save it to a variable
-  // '$' becomes a shorthand for cheerio's selector commands, much like jQuery's '$'
-  var $ = cheerio.load(html);
+    if(error) throw error;
+    // Load the HTML into cheerio and save it to a variable
+    // '$' becomes a shorthand for cheerio's selector commands, much like jQuery's '$'
+    var $ = cheerio.load(html);
 
-  // An empty array to save the data that we'll scrape
-  // 
-  // (i: iterator. element: the current element)
-  $(".headline").each(function(i, element) {
-    // console.log(element);
-    // Save the text of the element in a "title" variable
-    var title = $(element).children().text();
+    // An empty array to save the data that we'll scrape
+    // 
+    // (i: iterator. element: the current element)
+    $(".headline").each(function(i, element) {
+      // console.log(element);
+      // Save the text of the element in a "title" variable
+      var title = $(element).children().text();
 
-    // In the currently selected element, look at its child elements (i.e., its a-tags),
-    // then save the values for any "href" attributes that the child elements may have
-    var link = $(element).children().attr("href");
-    // console.log(link);
-    if(link.substring(0,4) != "http")
-    {
-      link = "https://www.sfchronicle.com"+link;
-    }
-    if(link.charAt(link.length-1) == "/")
-    {
-      link = link.substring(0,link.length-1);
-    }
-    
-    var summary = $(element).parent().children(".blurb").text().trim();
-    // Save these results in an object that we'll push into the results array we defined earlier
-    results.push({
-      title: title,
-      link: link,
-      summary: summary,
-      comment: []
+      // In the currently selected element, look at its child elements (i.e., its a-tags),
+      // then save the values for any "href" attributes that the child elements may have
+      var link = $(element).children().attr("href");
+      // console.log(link);
+      if(link.substring(0,4) != "http")
+      {
+        link = "https://www.sfchronicle.com"+link;
+      }
+      if(link.charAt(link.length-1) == "/")
+      {
+        link = link.substring(0,link.length-1);
+      }
+      var summary = $(element).parent().children(".blurb").text().trim();
+      // Save these results in an object that we'll push into the results array we defined earlier
+      results.push({
+        title: title,
+        link: link,
+        summary: summary,
+        comment: []
+      });  
     });
-    
-    // db.articles.insert({
-    //   title: title,
-    //   link: link,
-    //   summary: summary,
-    //   comment: []})
-    // });
-  
-});
-var unique = removeDuplicate(existingArts, results);
-// unique = removeDuplicate(existingArts.concat(unique));
-
-db.articles.insert(unique);
-res.send("hello");
-
-});
+  //remove duplicate articles from scraped results and the existing articles
+  var unique = removeDuplicate(existingArts, results);
+  //insert any new unique articles from the new scrape
+  db.articles.insert(unique);
+  res.send("hello");
+  });
 });
 
+//route to get all articles in our Mongo database
 app.get("/database",function(req,res){
   console.log("fetching");
   db.articles.find({}, function(err, data) {
@@ -132,7 +120,7 @@ app.get("/database",function(req,res){
   });
 });
 
-
+//WIP
 app.get("/saved_articles_database",function(req,res){
   db.savedArticles.find({}, function(err, data) {
     // Log any errors if the server encounters one
@@ -146,6 +134,7 @@ app.get("/saved_articles_database",function(req,res){
   });
 });
 
+//route to clear the database
 app.get("/clear", function(req, res) {
   // Remove every note from the notes collection
   db.articles.remove({}, function(error, response) {
@@ -163,14 +152,15 @@ app.get("/clear", function(req, res) {
   });
 });
 
-//route to get list of articles that the user saved
+//WIP
 app.get("/saved_articles", function(req,res){
   console.log("going to saved article and retrieving saved articles");
   res.sendFile(path.join(__dirname, '/public/results.html'));
 });
 
+//route to delete a particular comment
 app.get("/delete/:id/:comid", function(req, res) {
-  // Remove a note using the objectID
+  // Remove a comment using the objectID
   console.log("route here");
   db.articles.update(
     {
@@ -205,8 +195,6 @@ app.post("/comment/:id", function(req,res){
       _id: mongojs.ObjectId(req.params.id)
     },
     {
-      // Set the title, note and modified parameters
-      // sent in the req body.
       $push: {
         comment: req.body.comment
         // modified: Date.now()
@@ -232,6 +220,7 @@ app.listen(3000, function() {
     console.log("App running on port 3000!");
 });
 
+//a function that removes duplicates between the 2 arrays
 function removeDuplicate(existing, arr){
   console.log(arr.length);
   console.log(existing.length);
@@ -275,15 +264,11 @@ function removeDuplicate(existing, arr){
       }
     }
   }
- else{
+  else{
    uniqueArr2 = uniqueArr;
- }
-  // console.log(dup);
-  console.log(uniqueArr2.length);
-  console.log(uniqueArr2);
-  return uniqueArr2;
-
-  
-}
-
-
+  }
+// console.log(dup);
+console.log(uniqueArr2.length);
+console.log(uniqueArr2);
+return uniqueArr2; 
+};
