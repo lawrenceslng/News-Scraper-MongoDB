@@ -55,7 +55,6 @@ getResults();
   
 //function to get route that executes cheerio and grabs headlines from SF Chron
 $(".scrape").on("click", function() {
-    
     $.ajax({
         type: "GET",
         url: "/bay_area_news",
@@ -65,6 +64,7 @@ $(".scrape").on("click", function() {
         }
     });
 });
+
 // When the #clear-all button is pressed
 $(document).on("click",".clear",function(){
     // Make an AJAX GET request to delete the notes from the db
@@ -99,15 +99,7 @@ $(document).on("click", ".submit", function(e) {
         success: function(data) {
             getResults();
         }
-      })
-    //   // If that API call succeeds, add the comment to page
-        // .then(function(data) {
-        //     console.log("returning");
-        //     $(".results").prepend("<span>Comment added</span>")
-        // });
-    // $("#commentForm").attr("method","POST");
-    // $("#commentForm").attr("action","/comment");
-    // $("#commentForm").submit();
+    })
 });
 
 // When user clicks the delete button for a note
@@ -126,13 +118,10 @@ $(document).on("click", ".delete", function() {
     $.ajax({
       type: "GET",
       url: "/delete/" + articleId + "/" + comment,
-  
       // On successful call
       success: function(response) {
-        // Remove the p-tag from the DOM
         selected.remove();
         console.log("comment " + commentId + " removed");
-
       }
     });
   });
