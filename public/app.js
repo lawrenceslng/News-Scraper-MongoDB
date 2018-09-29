@@ -15,7 +15,7 @@ function getResults() {
             for (var i = 0; i < data.length; i++) {
                 console.log(data[i].comment.length);
                 var newDiv = $("<div>").attr("data-id", data[i]._id);
-                var saveButton = $("<button class='save'>").text("Save this Article");
+                var saveButton = $("<button class='save btn btn-primary'>").text("Save this Article");
                 if(data[i].comment.length == 0)
                 {
                     var comments =  $("<span>No Comments for this article</span>");
@@ -36,7 +36,8 @@ function getResults() {
                 // var commentButton = $("<button type='button' class='btn btn-primary comment'>").text("View/Add a Comment");
                 var commentTextBox = $("<div class='form-group'><label for='commentTextArea'>Leave a comment!</label><textarea class='form-control' name='comment' id='commentTextArea' rows='3'></textarea></div>");
                 var commentSubmitButton = $("<button class='submit btn btn-primary'>").text("Add a Comment");
-                newDiv.html("<h5>"+data[i].title+"</h5> <p style='display: block;'>"+data[i].summary+"</p> <a target='_blank' rel='noopener noreferrer' href = " + data[i].link+">Article Link</a>");
+                console.log(data[i].link);
+                newDiv.html("<h5>"+data[i].title+"</h5> <p>"+data[i].summary+"</p><a class = 'btn btn-primary' target='_blank' rel='noopener noreferrer' href = " + data[i].link+">Article Link</a>");
                 newDiv.append(saveButton);
                 // newDiv.append(commentButton);
                 commentForm.append(commentTextBox);

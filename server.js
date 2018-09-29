@@ -65,7 +65,7 @@ app.get("/bay_area_news", function(req,res){
 
 
   // Making a request for reddit's "webdev" board. The page's HTML is passed as the callback's third argument
-  request("https://www.sfchronicle.com/local/", function(error, response, html) {
+  request("https://www.sfchronicle.com/local", function(error, response, html) {
   if(error) throw error;
   // Load the HTML into cheerio and save it to a variable
   // '$' becomes a shorthand for cheerio's selector commands, much like jQuery's '$'
@@ -82,7 +82,16 @@ app.get("/bay_area_news", function(req,res){
     // In the currently selected element, look at its child elements (i.e., its a-tags),
     // then save the values for any "href" attributes that the child elements may have
     var link = $(element).children().attr("href");
-    link = "https://www.sfchronicle.com/local/"+link;
+    // console.log(link);
+    if(link.substring(0,4) != "http")
+    {
+      link = "https://www.sfchronicle.com"+link;
+    }
+    if(link.charAt(link.length-1) == "/")
+    {
+      link = link.substring(0,link.length-1);
+    }
+    
     var summary = $(element).parent().children(".blurb").text().trim();
     // Save these results in an object that we'll push into the results array we defined earlier
     results.push({
