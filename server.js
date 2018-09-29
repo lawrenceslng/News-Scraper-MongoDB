@@ -55,8 +55,6 @@ app.get("/bay_area_news", function(req,res){
   var $ = cheerio.load(html);
 
   // An empty array to save the data that we'll scrape
-  
-
   // 
   // (i: iterator. element: the current element)
   $(".headline").each(function(i, element) {
@@ -72,24 +70,30 @@ app.get("/bay_area_news", function(req,res){
     results.push({
       title: title,
       link: link,
-      summary: summary
-    });
-    db.articles.insert({
-      title: title,
-      link: link,
       summary: summary,
-      comment: []})
+      comment: []
     });
+    
+    // db.articles.insert({
+    //   title: title,
+    //   link: link,
+    //   summary: summary,
+    //   comment: []})
+    // });
   // Log the results once you've looped through each of the elements found with cheerio
-  console.log(results);
+  // console.log(results);
+  // console.log(results);
+  // db.articles.insert(removeDuplicate(results));
   
-
 });
+db.articles.insert(removeDuplicate(results));
 res.send("hello");
 
 });
+});
 
 app.get("/database",function(req,res){
+  console.log("fetching");
   db.articles.find({}, function(err, data) {
     // Log any errors if the server encounters one
     if (err) {
@@ -195,4 +199,41 @@ app.post("/comment/:id", function(req,res){
 // Set the app to listen on port 3000
 app.listen(3000, function() {
     console.log("App running on port 3000!");
-  });
+});
+
+function removeDuplicate(arr){
+  console.log(arr.length);
+  var dup = [];
+  var dupLength = 0;
+  var uniqueArr = [];
+  for(var i = 0; i < arr.length; i++) {
+    // console.log(arr[i].title);
+    
+    for(var j = i; j < arr.length; j++) {
+        if(i != j && arr[i].title == arr[j].title) {
+            console.log(arr[i].title);
+            console.log(arr[j].title);
+            dup.push(j);
+        }
+        // else
+        // {
+        //   uniqueArr.push(arr[i]);
+        // }
+    }
+    if(dupLength == dup.length)
+    {
+      uniqueArr.push(arr[i]);
+    }
+    else{
+      dupLength++;
+    }
+  }
+  console.log(dup);
+  console.log(uniqueArr.length);
+  console.log(uniqueArr);
+  return uniqueArr;
+
+  
+}
+
+
