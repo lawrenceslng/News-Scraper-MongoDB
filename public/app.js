@@ -27,8 +27,8 @@ function getResults() {
                     {
                         console.log(data[i].comment[j]);
                         //
-                        comments.append(data[i].comment[j]);
-                        comments.append("<br>");
+                        comments.append("<ul class = 'comment' id="+j+">"+data[i].comment[j]+"<button class='delete btn btn-danger' id="+j+">X</button></ul>");
+                        // comments.append("<button class='delete btn btn-danger' id="+j+">X</button><br>");
                     }
                 }
                 
@@ -109,7 +109,32 @@ $(document).on("click", ".submit", function(e) {
     // $("#commentForm").submit();
 });
 
+// When user clicks the delete button for a note
+$(document).on("click", ".delete", function() {
+    // Save the p tag that encloses the button
+    var selected = $(this).parent();
+    var articleId = $(this).parents("div").attr("data-id");
+    console.log(articleId);
+    var commentId = $(this).attr("id");
+    console.log(commentId);
+    var comment = $(this).parent().text();
+    comment = comment.substring(0,comment.length-1);
+    console.log(comment);
+    // Make an AJAX GET request to delete the specific note
+    // this uses the data-id of the p-tag, which is linked to the specific note
+    $.ajax({
+      type: "GET",
+      url: "/delete/" + articleId + "/" + comment,
+  
+      // On successful call
+      success: function(response) {
+        // Remove the p-tag from the DOM
+        selected.remove();
+        console.log("comment " + commentId + " removed");
 
+      }
+    });
+  });
 
 //potential function to hide comments and comment box
 // $(document).on("click",".comment",function(event){
