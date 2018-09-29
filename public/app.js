@@ -36,7 +36,7 @@ function getResults() {
                 // var commentButton = $("<button type='button' class='btn btn-primary comment'>").text("View/Add a Comment");
                 var commentTextBox = $("<div class='form-group'><label for='commentTextArea'>Example textarea</label><textarea class='form-control' name='comment' id='commentTextArea' rows='3'></textarea></div>");
                 var commentSubmitButton = $("<button class='submit btn btn-primary'>").text("Add a Comment");
-                newDiv.html("<h5>"+data[i].title+"</h5> <span>"+data[i].summary+"</span> <br> <a href = " + data[i].link+">Article Link</a>");
+                newDiv.html("<h5>"+data[i].title+"</h5> <span>"+data[i].summary+"</span> <br> <a target='_blank' rel='noopener noreferrer' href = " + data[i].link+">Article Link</a>");
                 newDiv.append(saveButton);
                 // newDiv.append(commentButton);
                 commentForm.append(commentTextBox);

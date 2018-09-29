@@ -82,6 +82,7 @@ app.get("/bay_area_news", function(req,res){
     // In the currently selected element, look at its child elements (i.e., its a-tags),
     // then save the values for any "href" attributes that the child elements may have
     var link = $(element).children().attr("href");
+    link = "https://www.sfchronicle.com/local/"+link;
     var summary = $(element).parent().children(".blurb").text().trim();
     // Save these results in an object that we'll push into the results array we defined earlier
     results.push({
